@@ -12,8 +12,7 @@ import {registerValidation, loginValidation, postCreateValidation} from './valid
 
 
 mongoose
-    //.connect(process.env.MONGODB_URI)
-    .connect('mongodb+srv://admin:153246@cluster0.awuhaop.mongodb.net/blog?retryWrites=true&w=majority')
+    .connect(process.env.MONGODB_URI)
     .then(() => console.log('DB OK'))
     .catch((err) => console.log('DB error', err))
 
@@ -58,8 +57,7 @@ app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, Post
 app.delete('/posts/:id', checkAuth, PostController.remove)
 app.patch('/posts/:id', checkAuth, postCreateValidation, handleValidationErrors, PostController.update)
 
-//process.env.PORT || 7654
-app.listen(7654, (err) => {
+app.listen(process.env.PORT || 7654, (err) => {
     if (err) {
         return console.log(err)
     }
