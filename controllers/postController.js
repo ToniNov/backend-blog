@@ -1,4 +1,5 @@
 import PostModel from "../models/post.js";
+import CommentModel from "../models/comments.js";
 
 export const getAll = async (req, res) => {
     try {
@@ -152,32 +153,37 @@ export const getLastTags = async (req, res) => {
     }
 }
 
-// todo post by tags
-// export const getByTag = async (req, res) => {
-//     try {
-//         const tag = req.params.tag
-//
-//         console.log(tag)
-//
-//         PostModel.find(
-//             { "tags": { $in: [tag] } },
-//             (err, doc) => {
-//                 if (err) {
-//                     console.log(err)
-//                     return res.status(500).json({
-//                         message: 'Failed to return the article by tag.'
-//                     })
-//                 }
-//
-//                 res.json(doc)
-//                 console.log(doc)
-//             }
-//         )
-//
-//     } catch (err) {
-//         console.log(err)
-//         res.status(500).json({
-//             message: 'Failed to get the article by tag.'
-//         })
-//     }
-// }
+export const getByTag = async (req, res) => {
+    try {
+        const params = req.params
+
+        const posts = await PostModel.find(
+            {"tags": {$in: [params.tag]}},
+        )
+        res.json(posts)
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            message: 'Failed to get the article by tag.'
+        })
+    }
+}
+
+export const getPostComments = async (req, res) => {
+    try {
+        const post = await PostModel.findById(req.params.id)
+
+        const list = await Promise.all(
+           post.comments.map((comment)=> {
+               return CommentModel.findById(comment)
+           })
+        )
+
+        res.json(list)
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            message: 'Failed to get comments'
+        })
+    }
+}
